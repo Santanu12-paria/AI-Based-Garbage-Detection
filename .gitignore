@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# VS Code
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# Temporary files
+*.tmp
+*.temp
+
+# YOLO training outputs
+runs/
+
+# Datasets
+dataset/
+datasets/
+dataset_9class/
+
+# Large model files
+*.pt
+*.onnx
+
+# Test images
+test_images/
+
+# OS files
+.DS_Store
+Thumbs.db
