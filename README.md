@@ -61,39 +61,31 @@ The trained model can detect the following 7 waste categories:
 
 ---
 
-## 🏗️ Project Structure
+## 📁 Project Structure
 
-~~~
 AI-Based-Garbage-Detection/
 │
 ├── app.py
 ├── README.md
+├── requirements.txt
 ├── .gitignore
 │
 ├── check_dataset.py
 ├── check_9class_distribution.py
 ├── create_9class_dataset.py
 │
-├── screenshots/
-│   ├── main_interface.png
-│   ├── detection_result.png
-│   ├── detection_report.png
-│   └── detection_report2.png
-│
-├── models/
-│
-├── runs/
-│
-├── test_images/
-│
-└── venv/
-~~~
+└── screenshots/
+    ├── main_interface.png
+    ├── detection_result.png
+    ├── detection_report.png
+    └── detection_report2.png
+
+The trained model, dataset, virtual environment, training outputs and test images are excluded from GitHub using .gitignore.
 
 ---
 
 ## ⚙️ System Architecture
 
-~~~
 Input Image
      ↓
 Image Preprocessing
@@ -109,7 +101,6 @@ Object Counting
 Waste Level Analysis
      ↓
 Streamlit Dashboard
-~~~
 
 ---
 
@@ -133,35 +124,25 @@ Streamlit Dashboard
 
 ### 1. Clone the Repository
 
-~~~bash
 git clone https://github.com/Santanu12-paria/AI-Based-Garbage-Detection.git
-~~~
 
 ### 2. Open the Project
 
-~~~bash
 cd AI-Based-Garbage-Detection
-~~~
 
 ### 3. Create a Virtual Environment
 
-~~~bash
 python -m venv venv
-~~~
 
 ### 4. Activate the Virtual Environment
 
 For Windows PowerShell:
 
-~~~powershell
 venv\Scripts\Activate.ps1
-~~~
 
 ### 5. Install Required Libraries
 
-~~~bash
-pip install ultralytics streamlit pillow
-~~~
+pip install -r requirements.txt
 
 ---
 
@@ -169,9 +150,7 @@ pip install ultralytics streamlit pillow
 
 After activating the virtual environment, run:
 
-~~~bash
 streamlit run app.py
-~~~
 
 The Streamlit application will open in your web browser.
 
@@ -181,11 +160,9 @@ The Streamlit application will open in your web browser.
 
 The application currently uses a YOLO confidence threshold of:
 
-~~~
 0.15
-~~~
 
-The threshold was selected after testing the model with different garbage images.
+This threshold allows the application to detect objects with relatively low confidence while providing better detection coverage for different garbage images.
 
 ---
 
@@ -237,23 +214,23 @@ Each detected object is displayed with its confidence score.
 
 Example:
 
-~~~
 1. BOTTLE — 91.4% confidence
-2. CARDboard — 84.7% confidence
+2. CARDBOARD — 84.7% confidence
 3. PLASTIC — 76.2% confidence
-~~~
+
+The actual values depend on the uploaded image.
 
 ### 📋 Detection Report
 
-The application generates a report containing:
+The application generates a report containing the detected waste types and their confidence scores.
+
+Example:
 
 | Waste Type | Confidence |
-|---|---|
+|---|---:|
 | Bottle | 91.4% |
 | Cardboard | 84.7% |
 | Plastic | 76.2% |
-
-The actual values depend on the uploaded image.
 
 ---
 
@@ -314,7 +291,7 @@ The current system has some limitations:
 - Small objects may be difficult to detect.
 - Partially hidden objects may reduce detection performance.
 - Detection depends on image quality and lighting.
-- Paper detection can be challenging in some images.
+- Some waste categories may be challenging in certain images.
 - CPU-based inference can be slower than GPU-based inference.
 
 ---
@@ -324,14 +301,11 @@ The current system has some limitations:
 Future improvements can include:
 
 - 📱 Mobile application
-- 🌐 Cloud deployment
-- 📹 Real-time camera detection
-- 🚮 Automatic smart-bin classification
-- 📊 Advanced waste analytics
-- 🧠 Larger and more diverse datasets
-- ⚡ GPU acceleration
-- 🔄 Continuous model improvement
+- 🌐 Deployment as an online web application
 - 🏙️ Integration with smart-city waste management systems
+- 📊 Real-time camera-based garbage detection
+- 🚮 Automated waste segregation systems
+- 📈 Advanced waste analytics and reporting
 
 ---
 
@@ -385,22 +359,8 @@ The dataset used in this project follows its respective dataset license.
 
 ---
 
-## ⭐ Acknowledgement
+## ⭐ Conclusion
 
-This project uses the **Ultralytics YOLO framework** for object detection, **Roboflow** for dataset preparation, and **Streamlit** for developing the interactive web application.
+The **AI-Based Garbage Detection for Smart Waste Management** project demonstrates how Deep Learning and Computer Vision can be used to automatically identify and classify different types of waste.
 
----
-
-## 🙌 Conclusion
-
-The **AI-Based Garbage Detection for Smart Waste Management** project demonstrates how Deep Learning and Computer Vision can be used to automatically detect and classify different types of waste.
-
-The Streamlit application provides a simple interface where users can upload an image and receive:
-
-- Garbage detection results
-- Waste classification
-- Confidence scores
-- Object counts
-- Waste level analysis
-
-This project demonstrates the practical application of Artificial Intelligence in **smart waste management and environmental sustainability**.
+The Streamlit application provides a simple interface for uploading images and viewing AI-based garbage detection results, making the system useful as a prototype for intelligent waste management applications.
