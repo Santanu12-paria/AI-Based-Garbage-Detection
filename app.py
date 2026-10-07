@@ -22,43 +22,39 @@ st.set_page_config(
 # CUSTOM CSS
 # =========================================================
 
-st.markdown("""
-<style>
+st.markdown(
+    """
+    <style>
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
 
-.block-container {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-}
+    .main-title {
+        text-align: center;
+        font-size: 42px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
 
-.main-title {
-    text-align: center;
-    font-size: 42px;
-    font-weight: 700;
-    margin-bottom: 5px;
-}
+    .subtitle {
+        text-align: center;
+        font-size: 18px;
+        color: #666666;
+        margin-bottom: 25px;
+    }
 
-.subtitle {
-    text-align: center;
-    font-size: 18px;
-    color: #666666;
-    margin-bottom: 25px;
-}
-
-.section-title {
-    font-size: 25px;
-    font-weight: 600;
-}
-
-.footer {
-    text-align: center;
-    color: #777777;
-    font-size: 14px;
-    margin-top: 35px;
-    padding: 15px;
-}
-
-</style>
-""", unsafe_allow_html=True)
+    .footer {
+        text-align: center;
+        color: #777777;
+        font-size: 14px;
+        margin-top: 35px;
+        padding: 15px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 
 # =========================================================
@@ -123,7 +119,6 @@ with st.sidebar:
 
 MODEL_PATH = r"runs\detect\garbage_detection-2\weights\best.pt"
 
-
 if not os.path.exists(MODEL_PATH):
 
     st.error(
@@ -134,7 +129,6 @@ if not os.path.exists(MODEL_PATH):
 
 
 # Load YOLO model
-
 model = YOLO(MODEL_PATH)
 
 
@@ -178,7 +172,6 @@ if uploaded_file is not None:
 
         temp_path = temp_file.name
 
-
     # =====================================================
     # YOLO DETECTION
     # =====================================================
@@ -191,15 +184,11 @@ if uploaded_file is not None:
             verbose=False
         )
 
-
     # Remove temporary file
-
     if os.path.exists(temp_path):
         os.remove(temp_path)
 
-
     # Get first result
-
     result = results[0]
 
 
@@ -211,9 +200,7 @@ if uploaded_file is not None:
 
     col1, col2 = st.columns(2)
 
-
     # Original image
-
     with col1:
 
         st.markdown("### 📷 Original Image")
@@ -223,9 +210,7 @@ if uploaded_file is not None:
             use_container_width=True
         )
 
-
     # Detection image
-
     with col2:
 
         st.markdown("### 🤖 Detection Result")
@@ -236,7 +221,6 @@ if uploaded_file is not None:
             annotated_image,
             use_container_width=True
         )
-
 
     st.markdown("---")
 
@@ -303,14 +287,12 @@ if uploaded_file is not None:
 
         metric1, metric2, metric3 = st.columns(3)
 
-
         with metric1:
 
             st.metric(
                 "🗑️ Total Objects",
                 total_objects
             )
-
 
         with metric2:
 
@@ -319,14 +301,12 @@ if uploaded_file is not None:
                 len(counts)
             )
 
-
         with metric3:
 
             st.metric(
                 "🎯 Avg. Confidence",
                 f"{average_confidence * 100:.1f}%"
             )
-
 
         st.markdown("---")
 
@@ -337,9 +317,7 @@ if uploaded_file is not None:
 
         st.subheader("♻️ Waste Classification")
 
-
         count_cols = st.columns(len(counts))
-
 
         for col, (name, count) in zip(
             count_cols,
@@ -353,7 +331,6 @@ if uploaded_file is not None:
                     count
                 )
 
-
         st.markdown("---")
 
 
@@ -363,7 +340,6 @@ if uploaded_file is not None:
 
         st.subheader("🚮 Waste Level")
 
-
         if total_objects <= 3:
 
             waste_level = "LOW"
@@ -371,7 +347,6 @@ if uploaded_file is not None:
             st.success(
                 "🟢 LOW WASTE — Small amount of garbage detected."
             )
-
 
         elif total_objects <= 7:
 
@@ -381,7 +356,6 @@ if uploaded_file is not None:
                 "🟡 MEDIUM WASTE — Moderate amount of garbage detected."
             )
 
-
         else:
 
             waste_level = "HIGH"
@@ -389,7 +363,6 @@ if uploaded_file is not None:
             st.error(
                 "🔴 HIGH WASTE — Large amount of garbage detected."
             )
-
 
         st.markdown("---")
 
@@ -399,7 +372,6 @@ if uploaded_file is not None:
         # =================================================
 
         st.subheader("🔎 Detection Details")
-
 
         for i, (name, confidence) in enumerate(
             zip(
@@ -414,7 +386,6 @@ if uploaded_file is not None:
                 f"{confidence * 100:.1f}% confidence"
             )
 
-
         st.markdown("---")
 
 
@@ -424,24 +395,19 @@ if uploaded_file is not None:
 
         st.subheader("📋 Detection Report")
 
-
         detection_data = []
-
 
         for name, confidence in zip(
             detected_names,
             confidence_values
         ):
 
-            detection_data.append({
-
-                "Waste Type": name.upper(),
-
-                "Confidence":
-                    f"{confidence * 100:.1f}%"
-
-            })
-
+            detection_data.append(
+                {
+                    "Waste Type": name.upper(),
+                    "Confidence": f"{confidence * 100:.1f}%"
+                }
+            )
 
         st.table(detection_data)
 
@@ -468,12 +434,12 @@ st.subheader("📚 About the Project")
 st.write(
     """
     **AI-Based Garbage Detection for Smart Waste Management**
-    
+
     This project uses a YOLO-based deep learning object detection
     model to identify and classify different types of garbage from
     uploaded images. The system can detect multiple waste objects
     and provide their class names, confidence scores and total count.
-    
+
     The application is developed using **Python, YOLO, Ultralytics
     and Streamlit**.
     """
@@ -488,23 +454,26 @@ st.subheader("✨ Key Features")
 
 feature1, feature2, feature3, feature4 = st.columns(4)
 
-
 with feature1:
+
     st.write("📷 **Image Upload**")
     st.caption("Upload JPG, JPEG or PNG images.")
 
 
 with feature2:
+
     st.write("🤖 **AI Detection**")
     st.caption("YOLO detects waste objects.")
 
 
 with feature3:
+
     st.write("📊 **Analysis**")
     st.caption("View counts and confidence scores.")
 
 
 with feature4:
+
     st.write("♻️ **Waste Level**")
     st.caption("LOW, MEDIUM or HIGH waste.")
 
