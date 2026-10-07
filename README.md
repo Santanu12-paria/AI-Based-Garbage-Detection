@@ -1,42 +1,55 @@
 # 🗑️ AI-Based Garbage Detection for Smart Waste Management
 
-An AI-powered garbage detection system that uses **YOLO Object Detection** and **Streamlit** to identify and classify different types of waste from images.
+## 📌 Project Overview
 
-The system detects multiple garbage objects in an image and displays their class, confidence score, total count, and overall waste level.
+**AI-Based Garbage Detection for Smart Waste Management** is a Deep Learning and Computer Vision project designed to automatically detect and classify different types of garbage from images.
 
----
+The system uses a **YOLO Object Detection model** to identify waste objects and provides:
 
-## 🎯 Project Objective
-
-The main objective of this project is to develop an intelligent waste detection system that can automatically identify different categories of garbage from images.
-
-This can support smart waste management by helping with:
-
-- Waste identification
+- Garbage detection
 - Waste classification
-- Garbage monitoring
-- Automated waste analysis
-- Smart waste management systems
+- Bounding box visualization
+- Confidence scores
+- Total object count
+- Waste-type count
+- Average detection confidence
+- Waste level analysis
+
+The project also includes an interactive **Streamlit web application** that allows users to upload an image and view the detection results.
 
 ---
 
-## ✨ Features
+## 🎯 Objectives
 
-- 📤 Upload garbage images
-- 🤖 YOLO-based object detection
-- ♻️ Detect multiple waste categories
-- 📊 Class-wise garbage counting
-- 🎯 Confidence score for each detection
-- 🗑️ Total number of detected objects
-- 🚮 Automatic waste-level classification
-- 📋 Detection report
-- 🖥️ Interactive Streamlit interface
+The main objectives of this project are:
+
+- To automatically detect garbage using Artificial Intelligence.
+- To classify garbage into different waste categories.
+- To display detected objects with bounding boxes.
+- To calculate detection confidence.
+- To count different types of waste.
+- To provide a simple and interactive web interface.
+- To demonstrate the use of Deep Learning in smart waste management.
 
 ---
 
-## 🧠 Waste Classes
+## 🧠 Technologies Used
 
-The trained model supports the following waste categories:
+| Technology | Purpose |
+|---|---|
+| Python | Programming Language |
+| YOLO | Object Detection |
+| Ultralytics | YOLO Framework |
+| Streamlit | Web Application |
+| Pillow | Image Processing |
+| Roboflow | Dataset |
+| Git & GitHub | Version Control |
+
+---
+
+## ♻️ Waste Categories
+
+The trained model can detect the following 7 waste categories:
 
 1. LDPE
 2. Bottle
@@ -48,43 +61,39 @@ The trained model supports the following waste categories:
 
 ---
 
-## 🛠️ Technologies Used
+## 🏗️ Project Structure
 
-| Technology | Purpose |
-|---|---|
-| Python | Programming language |
-| YOLO | Object detection |
-| Ultralytics | YOLO implementation |
-| Streamlit | Web application |
-| Pillow | Image processing |
-| OpenCV | Computer vision support |
-| Git & GitHub | Version control |
-
----
-
-## 📂 Project Structure
-
-```text
+~~~
 AI-Based-Garbage-Detection/
 │
 ├── app.py
-├── check_dataset.py
-├── check_9class_distribution.py
-├── create_9class_dataset.py
 ├── README.md
 ├── .gitignore
 │
-└── runs/
-    └── detect/
-        └── garbage_detection-2/
-            └── weights/
-                └── best.py
+├── check_dataset.py
+├── check_9class_distribution.py
+├── create_9class_dataset.py
+│
+├── screenshots/
+│   ├── main_interface.png
+│   ├── detection_result.png
+│   ├── detection_report.png
+│   └── detection_report2.png
+│
+├── models/
+│
+├── runs/
+│
+├── test_images/
+│
+└── venv/
+~~~
 
 ---
 
 ## ⚙️ System Architecture
 
-```text
+~~~
 Input Image
      ↓
 Image Preprocessing
@@ -100,165 +109,298 @@ Object Counting
 Waste Level Analysis
      ↓
 Streamlit Dashboard
+~~~
 
-🚀 Installation
-1. Clone the Repository
-Bash
+---
 
+## 🖥️ Application Screenshots
+
+### Main Interface
+
+![Main Interface](screenshots/main_interface.png)
+
+### Garbage Detection
+
+![Detection Result](screenshots/detection_result.png)
+
+### Detection Report
+
+![Detection Report](screenshots/detection_report.png)
+
+---
+
+## 🚀 Installation
+
+### 1. Clone the Repository
+
+~~~bash
 git clone https://github.com/Santanu12-paria/AI-Based-Garbage-Detection.git
-2. Open the Project
-Bash
+~~~
 
+### 2. Open the Project
+
+~~~bash
 cd AI-Based-Garbage-Detection
-3. Create a Virtual Environment
-Bash
+~~~
 
+### 3. Create a Virtual Environment
+
+~~~bash
 python -m venv venv
-4. Activate the Virtual Environment
+~~~
+
+### 4. Activate the Virtual Environment
+
 For Windows PowerShell:
 
-PowerShell
-
+~~~powershell
 venv\Scripts\Activate.ps1
-5. Install Required Libraries
-Bash
+~~~
 
+### 5. Install Required Libraries
+
+~~~bash
 pip install ultralytics streamlit pillow
-▶️ Running the Application
-Run the following command:
+~~~
 
-Bash
+---
 
+## ▶️ Running the Application
+
+After activating the virtual environment, run:
+
+~~~bash
 streamlit run app.py
+~~~
+
 The Streamlit application will open in your web browser.
 
-🎯 Detection Configuration
+---
+
+## 🎯 Detection Configuration
+
 The application currently uses a YOLO confidence threshold of:
 
-
+~~~
 0.15
+~~~
+
 The threshold was selected after testing the model with different garbage images.
 
-📊 Application Features
-📷 Original Image
-Displays the uploaded garbage image.
+---
 
-🤖 Detection Result
-YOLO detects garbage objects and displays bounding boxes around them.
+## 📊 Application Features
 
-📊 Detection Summary
+### 📷 Image Upload
+
+Users can upload garbage images in:
+
+- JPG
+- JPEG
+- PNG
+
+formats.
+
+### 🤖 AI Garbage Detection
+
+The YOLO model detects garbage objects and displays bounding boxes around the detected objects.
+
+### 🏷️ Waste Classification
+
+The system identifies the type of detected garbage.
+
+Supported categories:
+
+- LDPE
+- Bottle
+- Can
+- Cardboard
+- Organic
+- Paper
+- Plastic
+
+### 📊 Detection Summary
+
 The application displays:
 
-Total objects detected
+- Total objects detected
+- Number of waste types
+- Average detection confidence
 
-Number of waste types
+### ♻️ Waste Classification Count
 
-Average confidence
+The application provides the number of objects detected for each waste category.
 
-♻️ Waste Classification
-The application provides class-wise counts for the detected waste.
+### 🔎 Detection Details
 
-📋 Detection Report
 Each detected object is displayed with its confidence score.
 
 Example:
 
+~~~
+1. BOTTLE — 91.4% confidence
+2. CARDboard — 84.7% confidence
+3. PLASTIC — 76.2% confidence
+~~~
 
-Bottle       91.4%
-Cardboard    84.7%
-Plastic      76.2%
-🚮 Waste Level
+### 📋 Detection Report
+
+The application generates a report containing:
+
+| Waste Type | Confidence |
+|---|---|
+| Bottle | 91.4% |
+| Cardboard | 84.7% |
+| Plastic | 76.2% |
+
+The actual values depend on the uploaded image.
+
+---
+
+## 🚮 Waste Level Analysis
+
 The application calculates the waste level based on the number of detected objects.
 
-Objects Detected	Waste Level
-0–3	🟢 LOW
-4–7	🟡 MEDIUM
-8+	🔴 HIGH
+| Objects Detected | Waste Level |
+|---|---|
+| 0–3 | 🟢 LOW |
+| 4–7 | 🟡 MEDIUM |
+| 8+ | 🔴 HIGH |
 
-📈 Results
+### 🟢 LOW
+
+A small number of garbage objects are detected.
+
+### 🟡 MEDIUM
+
+A moderate number of garbage objects are detected.
+
+### 🔴 HIGH
+
+A large number of garbage objects are detected.
+
+---
+
+## 📈 Results
+
 The system can detect multiple types of garbage from uploaded images.
 
-Supported waste categories include:
+The model supports the following waste categories:
 
-LDPE
+- LDPE
+- Bottle
+- Can
+- Cardboard
+- Organic
+- Paper
+- Plastic
 
-Bottle
+Detection performance can vary depending on:
 
-Can
+- Image quality
+- Lighting conditions
+- Object size
+- Object orientation
+- Occlusion
+- Similarity between waste categories
 
-Cardboard
+---
 
-Organic
+## ⚠️ Limitations
 
-Paper
+The current system has some limitations:
 
-Plastic
+- Some waste categories have similar visual characteristics.
+- Small objects may be difficult to detect.
+- Partially hidden objects may reduce detection performance.
+- Detection depends on image quality and lighting.
+- Paper detection can be challenging in some images.
+- CPU-based inference can be slower than GPU-based inference.
 
-Detection performance can vary depending on image quality, lighting conditions, object size, and similarity between waste categories.
+---
 
-⚠️ Limitations
-Some waste categories have similar visual characteristics.
+## 🔮 Future Scope
 
-Small objects may be difficult to detect.
-
-Partially hidden objects may reduce detection performance.
-
-Detection depends on image quality and lighting.
-
-Paper detection can be challenging in some images.
-
-CPU-based inference can be slower than GPU-based inference.
-
-🔮 Future Scope
 Future improvements can include:
 
-📱 Mobile application
+- 📱 Mobile application
+- 🌐 Cloud deployment
+- 📹 Real-time camera detection
+- 🚮 Automatic smart-bin classification
+- 📊 Advanced waste analytics
+- 🧠 Larger and more diverse datasets
+- ⚡ GPU acceleration
+- 🔄 Continuous model improvement
+- 🏙️ Integration with smart-city waste management systems
 
-🌐 Cloud deployment
+---
 
-📹 Real-time camera detection
+## 👨‍💻 Project Information
 
-🚮 Automatic smart-bin classification
+**Project Title:** AI-Based Garbage Detection for Smart Waste Management
 
-📊 Advanced waste analytics
+**Domain:** Deep Learning / Computer Vision
 
-🧠 Larger and more diverse datasets
+**Programming Language:** Python
 
-⚡ GPU acceleration
+**Model:** YOLO Object Detection
 
-🔄 Continuous model improvement
+**Framework:** Ultralytics YOLO
 
-🏙️ Integration with smart-city waste management systems
+**Web Interface:** Streamlit
 
-👨‍💻 Project Information
-Project Title: AI-Based Garbage Detection for Smart Waste Management
+**Dataset:** Trash-Waste Detection Dataset
 
-Domain: Deep Learning / Computer Vision
+---
 
-Programming Language: Python
+## 📚 Dataset
 
-Model: YOLO Object Detection
+The dataset used for this project was obtained from **Roboflow**.
 
-Framework: Ultralytics YOLO
+Dataset categories include:
 
-Web Interface: Streamlit
+- LDPE
+- Bottle
+- Can
+- Cardboard
+- Organic
+- Paper
+- Plastic
 
-📜 License
-This project is developed for educational and academic purposes.
+The dataset was prepared in YOLO format for object detection.
 
-⭐ Acknowledgement
-This project uses the Ultralytics YOLO framework for object detection and Streamlit for developing the interactive web application.
+---
 
-🔗 GitHub Repository
+## 🔗 GitHub Repository
+
 https://github.com/Santanu12-paria/AI-Based-Garbage-Detection
 
+---
 
+## 📜 License
 
-So the order in your README will simply be:
+This project is developed for educational and academic purposes.
 
-**Project Structure → System Architecture → Installation → Running the Application → Detection Configuration → Application Features → Waste Level → Results → Limitations → Future Scope → Project Information → License → Acknowledgement → GitHub Repository.**
+The dataset used in this project follows its respective dataset license.
 
+---
 
+## ⭐ Acknowledgement
 
+This project uses the **Ultralytics YOLO framework** for object detection, **Roboflow** for dataset preparation, and **Streamlit** for developing the interactive web application.
 
+---
 
+## 🙌 Conclusion
+
+The **AI-Based Garbage Detection for Smart Waste Management** project demonstrates how Deep Learning and Computer Vision can be used to automatically detect and classify different types of waste.
+
+The Streamlit application provides a simple interface where users can upload an image and receive:
+
+- Garbage detection results
+- Waste classification
+- Confidence scores
+- Object counts
+- Waste level analysis
+
+This project demonstrates the practical application of Artificial Intelligence in **smart waste management and environmental sustainability**.
