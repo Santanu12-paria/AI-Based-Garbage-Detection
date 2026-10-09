@@ -1,27 +1,21 @@
+
 import streamlit as st
 from ultralytics import YOLO
 from PIL import Image
 from collections import Counter
-import tempfile
-import os
+from pathlib import Path
 
 
-# =========================================================
-# PAGE CONFIGURATION
-# =========================================================
-
+# ---------------- PAGE CONFIGURATION ----------------
 st.set_page_config(
-    page_title="AI Garbage Detection",
+    page_title="AI Based Waste Detection",
     page_icon="🗑️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 
-# =========================================================
-# CUSTOM CSS
-# =========================================================
-
+# ---------------- CUSTOM STYLING ----------------
 st.markdown(
     """
     <style>
@@ -40,7 +34,7 @@ st.markdown(
     .subtitle {
         text-align: center;
         font-size: 18px;
-        color: #666666;
+        color: #777777;
         margin-bottom: 25px;
     }
 
@@ -57,18 +51,15 @@ st.markdown(
 )
 
 
-# =========================================================
-# HEADER
-# =========================================================
-
+# ---------------- APPLICATION HEADER ----------------
 st.markdown(
-    '<div class="main-title">🗑️ AI-Based Garbage Detection</div>',
+    '<div class="main-title">🗑️ AI Based Waste Detection</div>',
     unsafe_allow_html=True
 )
 
 st.markdown(
     '<div class="subtitle">'
-    'Smart Waste Management using YOLO Object Detection'
+    'Smart Waste Management using YOLOv8 Object Detection'
     '</div>',
     unsafe_allow_html=True
 )
@@ -76,357 +67,262 @@ st.markdown(
 st.markdown("---")
 
 
-# =========================================================
-# SIDEBAR
-# =========================================================
+# ---------------- MODEL CONFIGURATION ----------------
+MODEL_PATH = Path(
+    "runs/detect/garbage_detection-2/weights/best.pt"
+)
 
+
+@st.cache_resource
+def load_model(model_path):
+    return YOLO(str(model_path))
+
+
+if not MODEL_PATH.is_file():
+    st.error(f"Trained YOLOv8 model not found: {MODEL_PATH}")
+    st.info(
+        "Check that app.py is running from your project folder "
+        "and that the best.pt file exists at the specified path."
+    )
+    st.stop()
+
+
+try:
+    model = load_model(MODEL_PATH.resolve())
+except Exception as error:
+    st.error(f"Unable to load the trained model: {error}")
+    st.stop()
+
+
+# ---------------- SIDEBAR ----------------
 with st.sidebar:
-
     st.header("⚙️ Project Information")
 
-    st.write("### 🤖 Model")
-    st.write("YOLO Object Detection")
+    st.subheader("🤖 AI Model")
+    st.write("YOLOv8 Nano (YOLOv8n)")
+    st.write("Custom-trained object detection model")
 
-    st.write("### 🎯 Detection Confidence")
-    st.write("0.15")
+    st.subheader("🎯 Detection Confidence")
 
-    st.write("### ♻️ Waste Classes")
+    conf_threshold = st.slider(
+        "Confidence threshold",
+        min_value=0.10,
+        max_value=0.90,
+        value=0.40,
+        step=0.05,
+        help=(
+            "Lower values may detect more objects but can also "
+            "produce false detections."
+        )
+    )
 
-    classes = [
-        "LDPE",
-        "Bottle",
-        "Can",
-        "Cardboard",
-        "Organic",
-        "Paper",
-        "Plastic"
-    ]
+    st.subheader("♻️ Waste Classes")
 
-    for item in classes:
-        st.write(f"• {item}")
+    for name in model.names.values():
+        st.write(f"• {name}")
 
     st.markdown("---")
 
     st.info(
-        "Upload a garbage image to detect and classify "
-        "different types of waste."
+        "Upload an image to identify and classify garbage "
+        "using the trained YOLOv8 model."
     )
 
 
-# =========================================================
-# MODEL
-# =========================================================
-
-MODEL_PATH = r"runs\detect\garbage_detection-2\weights\best.pt"
-
-if not os.path.exists(MODEL_PATH):
-
-    st.error(
-        f"❌ Model not found:\n\n{MODEL_PATH}"
-    )
-
-    st.stop()
-
-
-# Load YOLO model
-model = YOLO(MODEL_PATH)
-
-
-# =========================================================
-# IMAGE UPLOAD
-# =========================================================
-
+# ---------------- IMAGE UPLOAD ----------------
 st.subheader("📤 Upload Garbage Image")
 
 uploaded_file = st.file_uploader(
-    "Choose an image",
+    "Choose a garbage image",
     type=["jpg", "jpeg", "png"],
-    help="Upload a JPG, JPEG or PNG image."
+    help="Upload a JPG, JPEG, or PNG image."
 )
 
 
-# =========================================================
-# IMAGE PROCESSING
-# =========================================================
-
 if uploaded_file is not None:
 
-    # Open and convert image to RGB
-    image = Image.open(uploaded_file).convert("RGB")
+    try:
+        image = Image.open(uploaded_file).convert("RGB")
+    except Exception:
+        st.error("Unable to read this image. Please upload a valid image.")
+        st.stop()
 
     st.markdown("---")
 
-    # =====================================================
-    # TEMPORARY IMAGE
-    # =====================================================
+    # ---------------- OBJECT DETECTION ----------------
+    with st.spinner("🔍 YOLOv8 is detecting garbage..."):
 
-    with tempfile.NamedTemporaryFile(
-        delete=False,
-        suffix=".jpg"
-    ) as temp_file:
+        try:
+            results = model.predict(
+                source=image,
+                conf=conf_threshold,
+                imgsz=640,
+                verbose=False
+            )
 
-        image.save(
-            temp_file.name,
-            format="JPEG"
-        )
+            result = results[0]
 
-        temp_path = temp_file.name
+        except Exception as error:
+            st.error(f"Detection failed: {error}")
+            st.stop()
 
-    # =====================================================
-    # YOLO DETECTION
-    # =====================================================
-
-    with st.spinner("🔍 AI is detecting garbage..."):
-
-        results = model.predict(
-            source=temp_path,
-            conf=0.15,
-            verbose=False
-        )
-
-    # Remove temporary file
-    if os.path.exists(temp_path):
-        os.remove(temp_path)
-
-    # Get first result
-    result = results[0]
-
-
-    # =====================================================
-    # IMAGE COMPARISON
-    # =====================================================
-
+    # ---------------- IMAGE COMPARISON ----------------
     st.subheader("📷 Image Analysis")
 
     col1, col2 = st.columns(2)
 
-    # Original image
     with col1:
-
         st.markdown("### 📷 Original Image")
-
         st.image(
             image,
+            caption="Uploaded Image",
             use_container_width=True
         )
 
-    # Detection image
     with col2:
-
         st.markdown("### 🤖 Detection Result")
 
-        annotated_image = result.plot()
+        # Ultralytics returns the plotted image in BGR order.
+        # Convert it to RGB for Streamlit.
+        annotated_image = result.plot()[..., ::-1]
 
         st.image(
             annotated_image,
+            caption="YOLOv8 Detection Output",
             use_container_width=True
         )
 
     st.markdown("---")
 
-
-    # =====================================================
-    # CHECK DETECTIONS
-    # =====================================================
-
+    # ---------------- DETECTION SUMMARY ----------------
     if result.boxes is not None and len(result.boxes) > 0:
 
-        # -------------------------------------------------
-        # CLASS IDs
-        # -------------------------------------------------
-
-        class_ids = result.boxes.cls.tolist()
-
-
-        # -------------------------------------------------
-        # CLASS NAMES
-        # -------------------------------------------------
+        class_ids = [
+            int(class_id)
+            for class_id in result.boxes.cls.tolist()
+        ]
 
         detected_names = [
-            model.names[int(class_id)]
+            model.names[class_id]
             for class_id in class_ids
         ]
 
-
-        # -------------------------------------------------
-        # CLASS COUNTS
-        # -------------------------------------------------
+        confidences = result.boxes.conf.tolist()
 
         counts = Counter(detected_names)
 
-
-        # -------------------------------------------------
-        # CONFIDENCE VALUES
-        # -------------------------------------------------
-
-        confidence_values = result.boxes.conf.tolist()
-
-
-        # -------------------------------------------------
-        # AVERAGE CONFIDENCE
-        # -------------------------------------------------
-
-        average_confidence = (
-            sum(confidence_values)
-            / len(confidence_values)
-        )
-
-
-        # -------------------------------------------------
-        # TOTAL OBJECTS
-        # -------------------------------------------------
-
         total_objects = len(detected_names)
-
-
-        # =================================================
-        # DETECTION SUMMARY
-        # =================================================
+        total_types = len(counts)
+        average_confidence = (
+            sum(confidences) / len(confidences)
+        )
 
         st.subheader("📊 Detection Summary")
 
         metric1, metric2, metric3 = st.columns(3)
 
-        with metric1:
+        metric1.metric(
+            "🗑️ Total Objects",
+            total_objects
+        )
 
-            st.metric(
-                "🗑️ Total Objects",
-                total_objects
-            )
+        metric2.metric(
+            "🏷️ Waste Types",
+            total_types
+        )
 
-        with metric2:
-
-            st.metric(
-                "🏷️ Waste Types",
-                len(counts)
-            )
-
-        with metric3:
-
-            st.metric(
-                "🎯 Avg. Confidence",
-                f"{average_confidence * 100:.1f}%"
-            )
+        metric3.metric(
+            "🎯 Average Confidence",
+            f"{average_confidence * 100:.1f}%"
+        )
 
         st.markdown("---")
 
-
-        # =================================================
-        # CLASS-WISE COUNTS
-        # =================================================
-
+        # ---------------- WASTE CLASSIFICATION ----------------
         st.subheader("♻️ Waste Classification")
 
-        count_cols = st.columns(len(counts))
+        classification_data = [
+            {
+                "Waste Type": name,
+                "Count": count
+            }
+            for name, count in counts.items()
+        ]
 
-        for col, (name, count) in zip(
-            count_cols,
-            counts.items()
-        ):
-
-            with col:
-
-                st.metric(
-                    name.upper(),
-                    count
-                )
+        st.table(classification_data)
 
         st.markdown("---")
 
-
-        # =================================================
-        # WASTE LEVEL
-        # =================================================
-
+        # ---------------- WASTE LEVEL ----------------
         st.subheader("🚮 Waste Level")
 
         if total_objects <= 3:
-
-            waste_level = "LOW"
-
             st.success(
-                "🟢 LOW WASTE — Small amount of garbage detected."
+                "🟢 LOW WASTE — A small number of objects detected."
             )
 
         elif total_objects <= 7:
-
-            waste_level = "MEDIUM"
-
             st.warning(
-                "🟡 MEDIUM WASTE — Moderate amount of garbage detected."
+                "🟡 MEDIUM WASTE — A moderate number of objects detected."
             )
 
         else:
-
-            waste_level = "HIGH"
-
             st.error(
-                "🔴 HIGH WASTE — Large amount of garbage detected."
+                "🔴 HIGH WASTE — A large number of objects detected."
             )
+
+        st.caption(
+            "Waste level is estimated from the number of detected "
+            "objects in this image. It is not a measurement of "
+            "actual waste volume or weight."
+        )
 
         st.markdown("---")
 
-
-        # =================================================
-        # DETECTION DETAILS
-        # =================================================
-
+        # ---------------- DETECTION DETAILS ----------------
         st.subheader("🔎 Detection Details")
 
-        for i, (name, confidence) in enumerate(
-            zip(
-                detected_names,
-                confidence_values
-            ),
+        for index, (name, confidence) in enumerate(
+            zip(detected_names, confidences),
             start=1
         ):
-
             st.write(
-                f"**{i}. {name.upper()}** — "
+                f"**{index}. {name}** — "
                 f"{confidence * 100:.1f}% confidence"
             )
 
         st.markdown("---")
 
-
-        # =================================================
-        # DETECTION REPORT TABLE
-        # =================================================
-
+        # ---------------- DETECTION REPORT ----------------
         st.subheader("📋 Detection Report")
 
-        detection_data = []
-
-        for name, confidence in zip(
-            detected_names,
-            confidence_values
-        ):
-
-            detection_data.append(
-                {
-                    "Waste Type": name.upper(),
-                    "Confidence": f"{confidence * 100:.1f}%"
-                }
+        report_data = [
+            {
+                "Object No.": index,
+                "Waste Type": name,
+                "Confidence": f"{confidence * 100:.1f}%"
+            }
+            for index, (name, confidence) in enumerate(
+                zip(detected_names, confidences),
+                start=1
             )
+        ]
 
-        st.table(detection_data)
-
-
-    # =====================================================
-    # NO DETECTION
-    # =====================================================
+        st.dataframe(
+            report_data,
+            use_container_width=True,
+            hide_index=True
+        )
 
     else:
-
         st.warning(
-            "⚠️ No garbage objects were detected in this image."
+            "⚠️ No garbage objects were detected. "
+            "Try lowering the confidence threshold or uploading "
+            "a clearer image."
         )
 
 
-# =========================================================
-# PROJECT INFORMATION
-# =========================================================
-
+# ---------------- ABOUT THE PROJECT ----------------
 st.markdown("---")
 
 st.subheader("📚 About the Project")
@@ -435,57 +331,47 @@ st.write(
     """
     **AI-Based Garbage Detection for Smart Waste Management**
 
-    This project uses a YOLO-based deep learning object detection
-    model to identify and classify different types of garbage from
-    uploaded images. The system can detect multiple waste objects
-    and provide their class names, confidence scores and total count.
+    This project uses a custom-trained YOLOv8 Nano deep learning
+    object detection model to identify and classify garbage in
+    uploaded images.
 
-    The application is developed using **Python, YOLO, Ultralytics
-    and Streamlit**.
+    The application displays annotated images, detected waste
+    categories, object counts, confidence scores, and a simple
+    waste-level estimate.
+
+    **Technologies:** Python, YOLOv8, Ultralytics, Streamlit and Pillow.
     """
 )
 
 
-# =========================================================
-# PROJECT FEATURES
-# =========================================================
-
+# ---------------- KEY FEATURES ----------------
 st.subheader("✨ Key Features")
 
 feature1, feature2, feature3, feature4 = st.columns(4)
 
 with feature1:
-
     st.write("📷 **Image Upload**")
-    st.caption("Upload JPG, JPEG or PNG images.")
-
+    st.caption("Upload JPG, JPEG, or PNG images.")
 
 with feature2:
-
     st.write("🤖 **AI Detection**")
-    st.caption("YOLO detects waste objects.")
-
+    st.caption("Detect garbage using your trained YOLOv8 model.")
 
 with feature3:
-
     st.write("📊 **Analysis**")
-    st.caption("View counts and confidence scores.")
-
+    st.caption("View detected objects and confidence scores.")
 
 with feature4:
+    st.write("♻️ **Waste Classification**")
+    st.caption("Review waste categories and estimated waste level.")
 
-    st.write("♻️ **Waste Level**")
-    st.caption("LOW, MEDIUM or HIGH waste.")
 
-
-# =========================================================
-# FOOTER
-# =========================================================
-
+# ---------------- FOOTER ----------------
 st.markdown(
     '<div class="footer">'
-    'AI-Based Garbage Detection | YOLO Object Detection | '
+    'AI-Based Garbage Detection | YOLOv8 Nano | '
     'Deep Learning | Smart Waste Management'
     '</div>',
     unsafe_allow_html=True
 )
+
